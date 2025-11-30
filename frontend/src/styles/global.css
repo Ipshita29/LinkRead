@@ -1,4 +1,4 @@
-/* Reset & Base */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -41,7 +41,7 @@ img {
   display: block;
 }
 
-/* Layout Utilities */
+
 .container {
   width: 100%;
   max-width: 1200px;
@@ -62,7 +62,7 @@ img {
 
 .hidden { display: none; }
 
-/* Typography Utilities */
+
 .text-center { text-align: center; }
 .font-bold { font-weight: 700; }
 .text-sm { font-size: 0.875rem; }
@@ -74,7 +74,9 @@ img {
 .text-primary { color: var(--primary-600); }
 .text-secondary { color: var(--neutral-500); }
 
-/* Component Classes */
+
+
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -141,7 +143,6 @@ img {
   color: var(--neutral-700);
 }
 
-/* Loader */
 .loader-overlay {
   position: fixed;
   inset: 0;
@@ -170,4 +171,33 @@ img {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+
+/* Tablet */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+
+  .navbar-links {
+    gap: var(--space-2);
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+  }
+}
+
+
+@media (max-width: 500px) {
+  .navbar-links {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
 }
