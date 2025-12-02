@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import API_URL, { getToken } from "../api";
 import "../styles/Profile.css";
 
+const stripHtmlTags = (html) => {
+    if (!html) return "";
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
+
 export default function Profile() {
-    const [user, setUser] = useState({ username: "User", email: "user@example.com" });
+    const [user, setUser] = useState({ username: "", email: "" });
     const [myPosts, setMyPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("posts");
@@ -16,8 +23,6 @@ export default function Profile() {
             return;
         }
 
-        // Fetch all posts and filter for the current user (mock implementation)
-        // In a real app, we should have an endpoint like /posts/me or /users/me/posts
         fetch(`${API_URL}/posts`)
             .then(res => res.json())
             .then(posts => {
@@ -44,11 +49,23 @@ export default function Profile() {
     }, [token]);
 
     const fetchProfile = async () => {
-        // Placeholder for fetching user profile
+        try {
+            const res = await fetch(`${API_URL}/auth/me`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUser(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile:", error);
+        }
     };
 
     const fetchMyPosts = async () => {
-        // Placeholder for fetching my posts
     };
 
     const handleEditProfile = () => {
@@ -68,7 +85,7 @@ export default function Profile() {
     return (
         <div className="container profile-wrapper">
 
-            {/* PROFILE HEADER CARD */}
+
             <div className="glass-panel profile-card">
                 <div className="profile-header">
                     <div className="profile-avatar">
@@ -85,7 +102,7 @@ export default function Profile() {
                     <button className="btn btn-secondary edit-profile-btn" onClick={handleEditProfile}>Edit Profile</button>
                 </div>
 
-                {/* STATS GRID */}
+
                 <div className="stats-grid">
                     <div className="stat-item">
                         <span className="stat-value">{myPosts.length}</span>
@@ -102,7 +119,7 @@ export default function Profile() {
                 </div>
             </div>
 
-            {/* CONTENT TABS */}
+
             <div className="profile-content">
                 <div className="content-tabs">
                     <button
@@ -136,7 +153,7 @@ export default function Profile() {
                                         <Link to={`/post/${post._id}`} className="post-link">
                                             <h3 className="post-title">{post.title}</h3>
                                         </Link>
-                                        <p className="post-excerpt">{post.content?.substring(0, 100)}...</p>
+                                        <p className="post-excerpt">{stripHtmlTags(post.content).substring(0, 100)}...</p>
                                     </div>
                                 ))}
                             </div>

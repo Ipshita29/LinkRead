@@ -3,6 +3,13 @@ import { Link } from "react-router-dom";
 import API_URL from "../api";
 import "../styles/Home.css";
 
+const stripHtmlTags = (html) => {
+  if (!html) return "";
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [popularPosts, setPopularPosts] = useState([]);
@@ -85,14 +92,13 @@ export default function Home() {
 
     if (res.ok) {
       alert("Post deleted successfully!");
-      fetchPosts(); // Refresh the list
+      fetchPosts();
     } else {
       const data = await res.json();
       alert(data.message || "Failed to delete post.");
     }
   };
 
-  // Decode token to get current user ID
   const getCurrentUserId = () => {
     const token = localStorage.getItem("token");
     if (!token) return null;
@@ -166,7 +172,7 @@ export default function Home() {
                 <Link to={`/post/${post._id}`} className="post-link">
                   <h3 className="post-title">{post.title}</h3>
                   <p className="post-excerpt">
-                    {post.content ? post.content.substring(0, 120) : "No content preview available..."}...
+                    {stripHtmlTags(post.content).substring(0, 120) || "No content preview available..."}...
                   </p>
                 </Link>
 

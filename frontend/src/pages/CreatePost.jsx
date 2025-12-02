@@ -16,7 +16,6 @@ export default function CreatePost() {
   const [searchParams] = useSearchParams();
   const autoSaveTimer = useRef(null);
 
-  // Rich text editor modules configuration
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
@@ -38,7 +37,6 @@ export default function CreatePost() {
     'link', 'image'
   ];
 
-  // Fetch user's drafts on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -49,22 +47,18 @@ export default function CreatePost() {
 
     fetchDrafts();
 
-    // Load draft if draftId is in URL
     const draftId = searchParams.get('draftId');
     if (draftId) {
       loadDraft(draftId);
     }
   }, []);
 
-  // Auto-save functionality
   useEffect(() => {
     if (post.title || post.content) {
-      // Clear existing timer
       if (autoSaveTimer.current) {
         clearTimeout(autoSaveTimer.current);
       }
 
-      // Set new timer for auto-save (30 seconds)
       autoSaveTimer.current = setTimeout(() => {
         autoSaveDraft();
       }, 30000);
@@ -133,7 +127,6 @@ export default function CreatePost() {
           body: JSON.stringify(draftData)
         });
       } else {
-        // Create new draft
         res = await fetch(`${API_URL}/posts`, {
           method: "POST",
           headers: authHeaders(),
@@ -207,14 +200,12 @@ export default function CreatePost() {
     try {
       let res;
       if (selectedDraft) {
-        // Update existing draft to published
         res = await fetch(`${API_URL}/posts/${selectedDraft}`, {
           method: "PUT",
           headers: authHeaders(),
           body: JSON.stringify(publishData)
         });
       } else {
-        // Create new published post
         res = await fetch(`${API_URL}/posts`, {
           method: "POST",
           headers: authHeaders(),
@@ -235,7 +226,6 @@ export default function CreatePost() {
     }
   };
 
-  // Alias for submit button
   const submit = publishPost;
 
   return (

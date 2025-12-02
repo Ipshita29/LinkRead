@@ -28,7 +28,7 @@ const createPost = async (req, res) => {
 const getAllPosts = async (req, res) => {
     try {
         const { search, tag } = req.query;
-        let query = { isDraft: false }; // Only show published posts
+        let query = { isDraft: false };
 
         if (search) {
             query.$text = { $search: search };
@@ -42,9 +42,7 @@ const getAllPosts = async (req, res) => {
             .populate('author', 'username profilePic')
             .sort({ createdAt: -1 });
 
-        // Calculate score for sorting if needed, but for now we just return them
-        // The frontend requested "Popular Posts" as a separate section, so we might want a separate endpoint or query param
-        // For now, let's keep this as chronological (Latest) as per requirement "Normal feed: Latest Posts (chronological)"
+
 
         res.json(posts);
     } catch (error) {
@@ -58,7 +56,7 @@ const getPopularPosts = async (req, res) => {
         // For Mongoose, aggregation is better for performance.
         const posts = await Post.aggregate([
             {
-                $match: { isDraft: false } // Only show published posts
+                $match: { isDraft: false }
             },
             {
                 $addFields: {
@@ -73,10 +71,9 @@ const getPopularPosts = async (req, res) => {
                 }
             },
             { $sort: { score: -1 } },
-            { $limit: 10 } // Limit to top 10 trending
+            { $limit: 10 }
         ]);
 
-        // Populate author after aggregation
         await Post.populate(posts, { path: 'author', select: 'username profilePic' });
 
         res.json(posts);
@@ -107,12 +104,10 @@ const upvotePost = async (req, res) => {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        // Remove from downvotes if present
         if (post.downvotes.includes(req.user.id)) {
             await post.updateOne({ $pull: { downvotes: req.user.id } });
         }
 
-        // Toggle upvote
         if (post.upvotes.includes(req.user.id)) {
             await post.updateOne({ $pull: { upvotes: req.user.id } });
             res.json({ message: "Upvote removed" });
@@ -133,12 +128,10 @@ const downvotePost = async (req, res) => {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        // Remove from upvotes if present
         if (post.upvotes.includes(req.user.id)) {
             await post.updateOne({ $pull: { upvotes: req.user.id } });
         }
 
-        // Toggle downvote
         if (post.downvotes.includes(req.user.id)) {
             await post.updateOne({ $pull: { downvotes: req.user.id } });
             res.json({ message: "Downvote removed" });
@@ -182,7 +175,6 @@ const updatePost = async (req, res) => {
             return res.status(401).json({ message: "Not authorized" });
         }
 
-        // Update fields
         post.title = req.body.title || post.title;
         post.content = req.body.content || post.content;
         post.tips = req.body.tips !== undefined ? req.body.tips : post.tips;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import API_URL, { authHeaders, getToken } from "../api";
 import "../styles/PostDetails.css";
 
@@ -8,6 +8,7 @@ export default function PostDetails() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
   const token = getToken();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${API_URL}/posts/${id}`)
@@ -77,7 +78,6 @@ export default function PostDetails() {
 
   const score = (post.upvotes?.length || 0) - (post.downvotes?.length || 0);
 
-  // Decode token to get current user ID
   const getCurrentUserId = () => {
     if (!token) return null;
     try {
@@ -90,6 +90,29 @@ export default function PostDetails() {
 
   const currentUserId = getCurrentUserId();
   const isAuthor = currentUserId && post.author?._id === currentUserId;
+
+  const handleDeletePost = async () => {
+    if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/posts/${id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+      });
+
+      if (res.ok) {
+        alert("Post deleted successfully!");
+        navigate("/");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to delete post.");
+      }
+    } catch (error) {
+      alert("Failed to delete post. Please try again.");
+    }
+  };
 
   return (
     <div className="container post-wrapper">
@@ -115,9 +138,7 @@ export default function PostDetails() {
           </div>
         </header>
 
-        <div className="article-content">
-          {post.content}
-        </div>
+        <div className="article-content" dangerouslySetInnerHTML={{ __html: post.content }} />
 
         <div className="article-footer">
           <div className="vote-section">
@@ -134,6 +155,12 @@ export default function PostDetails() {
             {token && (
               <button className="btn-ghost btn-sm report-btn" onClick={() => handleReport(post._id, "Post")}>
                 🚩 Report
+              </button>
+            )}
+
+            {isAuthor && (
+              <button className="btn btn-danger btn-sm delete-btn" onClick={handleDeletePost}>
+                🗑️ Delete Post
               </button>
             )}
           </div>

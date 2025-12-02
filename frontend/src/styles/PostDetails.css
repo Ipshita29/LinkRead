@@ -132,6 +132,26 @@
   text-align: center;
 }
 
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.report-btn {
+  margin-left: auto;
+}
+
 /* COMMENTS SECTION */
 .comments-wrapper {
   max-width: 800px;

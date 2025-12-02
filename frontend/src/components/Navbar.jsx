@@ -7,6 +7,7 @@ export default function Navbar() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [username, setUsername] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -16,6 +17,22 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8001/api"}/auth/me`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) setUsername(data.username);
+        })
+        .catch(() => { });
+    }
+  }, [token]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -63,7 +80,7 @@ export default function Navbar() {
                 className={`nav-link ${isActive("/profile")}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Profile
+                {username || "Profile"}
               </Link>
               <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="nav-link logout-btn">
                 Logout
@@ -71,7 +88,6 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {/* Optional About link could go here */}
               <Link
                 to="/login"
                 className={`nav-link ${isActive("/login")}`}

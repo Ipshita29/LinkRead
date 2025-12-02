@@ -21,17 +21,14 @@ const getMyProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Calculate total published posts
     const totalPosts = await Post.countDocuments({
       author: req.user.id,
       isDraft: false
     });
 
-    // Calculate total upvotes received across all posts
     const posts = await Post.find({ author: req.user.id, isDraft: false });
     const totalUpvotes = posts.reduce((sum, post) => sum + (post.upvotes?.length || 0), 0);
 
-    // Calculate blogging streak
     const publishedPosts = await Post.find({
       author: req.user.id,
       isDraft: false
@@ -61,7 +58,6 @@ const getMyProfile = async (req, res) => {
         }
       }
 
-      // Check if posted today
       const lastPostDate = new Date(publishedPosts[0].createdAt);
       lastPostDate.setHours(0, 0, 0, 0);
       if (lastPostDate.getTime() === today.getTime()) {
@@ -95,7 +91,6 @@ const updateUserProfile = async (req, res) => {
     user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
 
     if (req.body.password) {
-      // if we add password update logic later we put it here  
 
     }
 
