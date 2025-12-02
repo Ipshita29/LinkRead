@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import CreatePost from "./pages/CreatePost";
-import PostDetails from "./pages/PostDetails";
-import Profile from "./pages/Profile";
+import Navbar from "./components/Navbar.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Home from "./pages/Home.jsx";
+import CreatePost from "./pages/CreatePost.jsx";
+import PostDetails from "./pages/PostDetails.jsx";
+import Profile from "./pages/Profile.jsx";
 
 export default function App() {
   return (
