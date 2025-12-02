@@ -15,21 +15,13 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    // Allow any localhost origin
-    if (origin.startsWith("http://localhost")) {
-      return callback(null, true);
-    }
-    // Allow specific production domains if needed
-    // if (origin === "https://your-production-domain.com") return callback(null, true);
-
-    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-    return callback(new Error(msg), false);
-  },
+  origin: [
+    "http://localhost:5173", 
+    "https://linkread-2.onrender.com"
+  ],
   credentials: true,
 }));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
